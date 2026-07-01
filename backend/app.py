@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from config import Config
 from extensions import mongo, jwt, swagger
 
@@ -12,6 +13,7 @@ def create_app():
 
     app.config.from_object(Config)
 
+    CORS(app)
     mongo.init_app(app)
     jwt.init_app(app)
     swagger.init_app(app)

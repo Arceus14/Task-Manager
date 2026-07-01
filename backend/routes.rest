@@ -6,3 +6,40 @@ Content-Type: application/json
     "email":"syed@test.com",
     "password":"password123"
 }
+
+###
+
+POST http://127.0.0.1:5000/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email":"syed@test.com",
+    "password":"password123"
+}
+
+
+### 
+
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc4MjkzMzEwMiwianRpIjoiYzY0N2YyOGEtNzU3Ni00YjJkLTllM2MtNWRlODY2NzUwOGFjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjZhNDU1ZjBhMGZhN2RhMjhlMTJjMzhiYiIsIm5iZiI6MTc4MjkzMzEwMiwiY3NyZiI6IjY5MzdkMzg0LTU5OTQtNGFhOC05MzViLTZhMzFkMzMxMWRiMiIsImV4cCI6MTc4MjkzNDAwMiwicm9sZSI6InVzZXIifQ.d9rDC4bb-4A6w9uKFcI9pULrVNMrlNPXpdlcQ4m0-BY
+
+POST http://127.0.0.1:5000/api/v1/tasks/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title":"Finish Primetrade Assignment",
+    "description":"Complete backend and frontend"
+}
+
+###
+
+GET http://127.0.0.1:5000/api/v1/tasks/
+Authorization: Bearer {{token}}
+
+###
+
+@task_id = 6a4566aaf6efdfa237b33638
+
+DELETE http://127.0.0.1:5000/api/v1/tasks/{{task_id}}
+Authorization: Bearer {{token}}
+
