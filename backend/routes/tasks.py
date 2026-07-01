@@ -4,10 +4,12 @@ from flask import Blueprint, jsonify, request
 
 from flask_jwt_extended import (
     jwt_required,
-    get_jwt_identity
+    get_jwt_identity,
+    get_jwt
 )
 
 from models.task import Task
+from utils.validators import validate_task_create, validate_task_update
 
 task_bp = Blueprint("tasks", __name__)
 
@@ -24,17 +26,21 @@ def create_task():
       - Bearer: []
     """
 
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    if not data.get("title"):
+    error = validate_task_create(data)
+
+    if error:
         return jsonify({
             "success": False,
-            "message": "Title is required."
+            "message": error
         }), 400
 
+    description = data.get("description", "")
+
     task = Task.create(
-        data["title"],
-        data.get("description", ""),
+        data["title"].strip(),
+        description.strip() if isinstance(description, str) else "",
         get_jwt_identity()
     )
 
@@ -48,13 +54,20 @@ def create_task():
 @jwt_required()
 def get_tasks():
     """
-    Get My Tasks
+    Get My Tasks (all tasks if admin)
     ---
     tags:
       - Tasks
+    security:
+      - Bearer: []
     """
 
-    tasks = Task.get_all(get_jwt_identity())
+    role = get_jwt().get("role")
+
+    if role == "admin":
+        tasks = Task.get_all()
+    else:
+        tasks = Task.get_all(get_jwt_identity())
 
     return jsonify({
         "success": True,
@@ -70,6 +83,8 @@ def get_task(task_id):
     ---
     tags:
       - Tasks
+    security:
+      - Bearer: []
     """
 
     task = Task.get(task_id)
@@ -80,7 +95,10 @@ def get_task(task_id):
             "message": "Task not found."
         }), 404
 
-    if task["owner"] != get_jwt_identity():
+    is_owner = task["owner"] == get_jwt_identity()
+    is_admin = get_jwt().get("role") == "admin"
+
+    if not is_owner and not is_admin:
         return jsonify({
             "success": False,
             "message": "Forbidden."
@@ -102,6 +120,8 @@ def update_task(task_id):
     ---
     tags:
       - Tasks
+    security:
+      - Bearer: []
     """
 
     task = Task.get(task_id)
@@ -112,21 +132,32 @@ def update_task(task_id):
             "message": "Task not found."
         }), 404
 
-    if task["owner"] != get_jwt_identity():
+    is_owner = task["owner"] == get_jwt_identity()
+    is_admin = get_jwt().get("role") == "admin"
+
+    if not is_owner and not is_admin:
         return jsonify({
             "success": False,
             "message": "Forbidden."
         }), 403
 
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
+
+    error = validate_task_update(data)
+
+    if error:
+        return jsonify({
+            "success": False,
+            "message": error
+        }), 400
 
     update_data = {}
 
     if "title" in data:
-        update_data["title"] = data["title"]
+        update_data["title"] = data["title"].strip()
 
     if "description" in data:
-        update_data["description"] = data["description"]
+        update_data["description"] = data["description"].strip()
 
     if "completed" in data:
         update_data["completed"] = data["completed"]
@@ -147,6 +178,8 @@ def delete_task(task_id):
     ---
     tags:
       - Tasks
+    security:
+      - Bearer: []
     """
 
     task = Task.get(task_id)
@@ -157,7 +190,10 @@ def delete_task(task_id):
             "message": "Task not found."
         }), 404
 
-    if task["owner"] != get_jwt_identity():
+    is_owner = task["owner"] == get_jwt_identity()
+    is_admin = get_jwt().get("role") == "admin"
+
+    if not is_owner and not is_admin:
         return jsonify({
             "success": False,
             "message": "Forbidden."

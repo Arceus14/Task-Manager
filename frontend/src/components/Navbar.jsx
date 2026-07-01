@@ -1,8 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
+import { getRole } from "../utils/auth";
+
 export default function Navbar() {
 
     const navigate = useNavigate();
+
+    const role = getRole();
 
     function logout() {
 
@@ -23,6 +27,12 @@ export default function Navbar() {
                 <div className="navbar-mark">TM</div>
 
                 <h2>Task Manager</h2>
+
+                {role &&
+
+                    <span className="role-badge">{role}</span>
+
+                }
 
             </div>
 

@@ -4,7 +4,13 @@ import api from "../services/api";
 
 import Navbar from "../components/Navbar";
 
+import { isAdmin, getCurrentUserId } from "../utils/auth";
+
 export default function Dashboard() {
+
+    const admin = isAdmin();
+
+    const currentUserId = getCurrentUserId();
 
     const [tasks, setTasks] = useState([]);
 
@@ -12,11 +18,45 @@ export default function Dashboard() {
 
     const [description, setDescription] = useState("");
 
+    const [feedback, setFeedback] = useState(null);
+
+    function showFeedback(type, message) {
+
+        setFeedback({ type, message });
+
+    }
+
+    useEffect(() => {
+
+        if (!feedback) return;
+
+        const timer = setTimeout(() => setFeedback(null), 4000);
+
+        return () => clearTimeout(timer);
+
+    }, [feedback]);
+
+    function getErrorMessage(err) {
+
+        return err.response?.data?.message || "Something went wrong. Please try again.";
+
+    }
+
     async function loadTasks() {
 
-        const res = await api.get("/tasks/");
+        try {
 
-        setTasks(res.data.data);
+            const res = await api.get("/tasks/");
+
+            setTasks(res.data.data);
+
+        }
+
+        catch (err) {
+
+            showFeedback("error", getErrorMessage(err));
+
+        }
 
     }
 
@@ -30,39 +70,75 @@ export default function Dashboard() {
 
         e.preventDefault();
 
-        await api.post("/tasks/", {
+        try {
 
-            title,
+            await api.post("/tasks/", {
 
-            description
+                title,
 
-        });
+                description
 
-        setTitle("");
+            });
 
-        setDescription("");
+            setTitle("");
 
-        loadTasks();
+            setDescription("");
+
+            showFeedback("success", "Task added.");
+
+            loadTasks();
+
+        }
+
+        catch (err) {
+
+            showFeedback("error", getErrorMessage(err));
+
+        }
 
     }
 
     async function deleteTask(id) {
 
-        await api.delete(`/tasks/${id}`);
+        try {
 
-        loadTasks();
+            await api.delete(`/tasks/${id}`);
+
+            showFeedback("success", "Task deleted.");
+
+            loadTasks();
+
+        }
+
+        catch (err) {
+
+            showFeedback("error", getErrorMessage(err));
+
+        }
 
     }
 
     async function toggleComplete(task) {
 
-        await api.put(`/tasks/${task._id}`, {
+        try {
 
-            completed: !task.completed
+            await api.put(`/tasks/${task._id}`, {
 
-        });
+                completed: !task.completed
 
-        loadTasks();
+            });
+
+            showFeedback("success", "Task updated.");
+
+            loadTasks();
+
+        }
+
+        catch (err) {
+
+            showFeedback("error", getErrorMessage(err));
+
+        }
 
     }
 
@@ -84,11 +160,47 @@ export default function Dashboard() {
 
                 <div className="dashboard-head">
 
-                    <h1>Your tasks</h1>
+                    <div className="dashboard-head-row">
 
-                    <p>Track what's next and what's already done.</p>
+                        <h1>{admin ? "All tasks" : "Your tasks"}</h1>
+
+                        {admin &&
+
+                            <span className="admin-pill">Admin view</span>
+
+                        }
+
+                    </div>
+
+                    <p>
+
+                        {
+
+                            admin
+
+                            ?
+
+                            "Showing tasks from every user."
+
+                            :
+
+                            "Track what's next and what's already done."
+
+                        }
+
+                    </p>
 
                 </div>
+
+                {feedback &&
+
+                    <div className={`feedback-banner ${feedback.type}`}>
+
+                        {feedback.message}
+
+                    </div>
+
+                }
 
                 <div className="stats-strip">
 
@@ -214,6 +326,28 @@ export default function Dashboard() {
                                     </span>
 
                                 </div>
+
+                                {admin &&
+
+                                    <span className="owner-tag">
+
+                                        {
+
+                                            task.owner === currentUserId
+
+                                            ?
+
+                                            "Owned by you"
+
+                                            :
+
+                                            `Owner: ${task.owner.slice(-6)}`
+
+                                        }
+
+                                    </span>
+
+                                }
 
                                 <p className="task-desc">
 

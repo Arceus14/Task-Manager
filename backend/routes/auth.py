@@ -39,7 +39,7 @@ def register():
       409:
         description: Email already exists
     """
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     error = validate_register(data)
 
     if error:
@@ -55,7 +55,7 @@ def register():
             "message": "Email already registered."
         }), 409
 
-    role = data.get("role", "user")
+    role = "user"
     user = User.create(
         data["name"],
         data["email"],
@@ -98,8 +98,18 @@ def login():
       401:
         description: Invalid credentials
     """
-    data = request.get_json()
-    user = User.find_by_email(data["email"])
+    data = request.get_json(silent=True) or {}
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({
+            "success": False,
+            "message": "Email and password are required."
+        }), 400
+
+    user = User.find_by_email(email)
 
     if not user:
         return jsonify({
@@ -108,7 +118,7 @@ def login():
         }), 401
 
     if not User.verify_password(
-        data["password"],
+        password,
         user["password"]
     ):
         return jsonify({
