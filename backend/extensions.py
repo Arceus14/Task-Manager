@@ -7,4 +7,13 @@ mongo = PyMongo()
 
 jwt = JWTManager()
 
-swagger = Swagger()
+swagger = Swagger(
+    template={
+        "swagger": "2.0",
+        "info": {
+            "title": "Task Manager API",
+            "description": "Backend API for Primetrade.ai Internship Assignment",
+            "version": "1.0.0"
+        }
+    }
+)
