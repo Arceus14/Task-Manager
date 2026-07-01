@@ -52,11 +52,15 @@ export default function Register() {
 
     return(
 
-        <div className="container">
+        <div className="auth-screen">
 
-            <form className="card" onSubmit={register}>
+            <form className="auth-card" onSubmit={register}>
 
-                <h2>Create Account</h2>
+                <div className="auth-mark">TM</div>
+
+                <h2>Create your account</h2>
+
+                <p className="auth-sub">Set up a workspace to start tracking tasks.</p>
 
                 <input
 
@@ -90,7 +94,7 @@ export default function Register() {
 
                 />
 
-                <button>
+                <button className="btn btn-primary">
 
                     Register
 
@@ -98,15 +102,15 @@ export default function Register() {
 
                 {error &&
 
-                    <p>{error}</p>
+                    <p className="auth-error">{error}</p>
 
                 }
 
-                <Link to="/">
+                <p className="auth-footer">
 
-                    Already have an account?
+                    <Link to="/">Already have an account?</Link>
 
-                </Link>
+                </p>
 
             </form>
 

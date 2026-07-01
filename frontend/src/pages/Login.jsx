@@ -53,11 +53,15 @@ export default function Login() {
 
     return (
 
-        <div className="container">
+        <div className="auth-screen">
 
-            <form className="card" onSubmit={login}>
+            <form className="auth-card" onSubmit={login}>
 
-                <h2>Login</h2>
+                <div className="auth-mark">TM</div>
+
+                <h2>Welcome back</h2>
+
+                <p className="auth-sub">Log in to pick up where you left off.</p>
 
                 <input
                     placeholder="Email"
@@ -72,7 +76,7 @@ export default function Login() {
                     onChange={(e)=>setPassword(e.target.value)}
                 />
 
-                <button>
+                <button className="btn btn-primary">
 
                     Login
 
@@ -80,15 +84,15 @@ export default function Login() {
 
                 {error &&
 
-                    <p>{error}</p>
+                    <p className="auth-error">{error}</p>
 
                 }
 
-                <Link to="/register">
+                <p className="auth-footer">
 
-                    Create Account
+                    New here? <Link to="/register">Create an account</Link>
 
-                </Link>
+                </p>
 
             </form>
 

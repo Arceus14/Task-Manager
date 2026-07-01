@@ -1,37 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ---------------------------------------------
+   Design tokens
+--------------------------------------------- */
+:root{
+    --bg:            #0a0b10;
+    --bg-elevated:   #101219;
+    --surface:       #151822;
+    --surface-2:     #1b1f2c;
+    --border:        #262b3a;
+    --border-soft:   #1e2230;
+
+    --text:          #eceef4;
+    --text-dim:      #9a9fb5;
+    --text-faint:    #5c6178;
+
+    --accent:        #7c5cff;
+    --accent-2:      #4fa8ff;
+    --accent-soft:   rgba(124, 92, 255, .14);
+    --gradient:      linear-gradient(135deg, #7c5cff 0%, #4fa8ff 100%);
+
+    --success:       #33d69f;
+    --success-soft:  rgba(51, 214, 159, .12);
+    --warning:       #f7b955;
+    --warning-soft:  rgba(247, 185, 85, .12);
+    --danger:        #fa6a6a;
+    --danger-soft:   rgba(250, 106, 106, .12);
+
+    --radius-sm:  8px;
+    --radius-md:  14px;
+    --radius-lg:  20px;
+
+    --shadow-glow: 0 0 0 1px var(--border), 0 12px 32px rgba(0,0,0,.45);
+    --font-display: 'Space Grotesk', 'Inter', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+/* ---------------------------------------------
+   Reset
+--------------------------------------------- */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
+}
+
+html{
+    color-scheme: dark;
 }
 
 body{
-    background:#f5f5f5;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height:100vh;
+    background-image:
+        radial-gradient(circle at 15% 0%, rgba(124,92,255,.14), transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(79,168,255,.10), transparent 40%);
+    background-attachment: fixed;
 }
 
-.container{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+h1,h2,h3{
+    font-family: var(--font-display);
+    letter-spacing:-.01em;
 }
 
-.card{
-    width:350px;
-    background:white;
-    padding:30px;
-    border-radius:10px;
-    display:flex;
-    flex-direction:column;
-    gap:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
-
-input{
-    padding:10px;
+a{
+    color: inherit;
 }
 
 button{
-    padding:10px;
+    font-family: var(--font-body);
     cursor:pointer;
+    border:none;
+    background:none;
+    color:inherit;
+}
+
+input, textarea{
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--surface-2);
+    border:1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding:12px 14px;
+    font-size:.95rem;
+    outline:none;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+input::placeholder, textarea::placeholder{
+    color: var(--text-faint);
+}
+
+input:focus, textarea:focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    background: var(--surface);
+}
+
+::selection{
+    background: var(--accent);
+    color:#fff;
+}
+
+/* Accessible focus ring for keyboard users */
+button:focus-visible, a:focus-visible{
+    outline: 2px solid var(--accent-2);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ---------------------------------------------
+   Shared button primitives
+--------------------------------------------- */
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 18px;
+    border-radius: var(--radius-sm);
+    font-weight:600;
+    font-size:.9rem;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.btn-primary{
+    background: var(--gradient);
+    color:#fff;
+    box-shadow: 0 8px 20px rgba(124,92,255,.30);
+}
+
+.btn-primary:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 10px 26px rgba(124,92,255,.42);
+}
+
+.btn-primary:active{
+    transform: translateY(0);
+}
+
+/* ---------------------------------------------
+   Auth pages (Login / Register)
+--------------------------------------------- */
+.auth-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    position:relative;
+    overflow:hidden;
+}
+
+.auth-screen::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+        linear-gradient(var(--border-soft) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 40%, black 10%, transparent 75%);
+            mask-image: radial-gradient(ellipse 60% 55% at 50% 40%, black 10%, transparent 75%);
+    opacity:.5;
+    pointer-events:none;
+}
+
+.auth-card{
+    position:relative;
+    width:100%;
+    max-width:380px;
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding:36px 32px 30px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    box-shadow: var(--shadow-glow);
+    animation: rise .5s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes rise{
+    from{ opacity:0; transform: translateY(14px); }
+    to{ opacity:1; transform: translateY(0); }
+}
+
+.auth-mark{
+    width:44px;
+    height:44px;
+    border-radius: 12px;
+    background: var(--gradient);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size:1.05rem;
+    color:#fff;
+    box-shadow: 0 8px 20px rgba(124,92,255,.35);
+    margin-bottom:4px;
+}
+
+.auth-card h2{
+    font-size:1.5rem;
+    font-weight:700;
+}
+
+.auth-sub{
+    color: var(--text-dim);
+    font-size:.88rem;
+    margin-top:-10px;
+    margin-bottom:4px;
+}
+
+.auth-card input{
+    width:100%;
+}
+
+.auth-card .btn-primary{
+    width:100%;
+    margin-top:4px;
+}
+
+.auth-error{
+    background: var(--danger-soft);
+    color: var(--danger);
+    border:1px solid rgba(250,106,106,.25);
+    border-radius: var(--radius-sm);
+    padding:10px 12px;
+    font-size:.83rem;
+    font-weight:500;
+}
+
+.auth-footer{
+    text-align:center;
+    font-size:.85rem;
+    color: var(--text-dim);
+    margin-top:6px;
+}
+
+.auth-footer a{
+    color: var(--accent-2);
+    font-weight:600;
+    text-decoration:none;
+}
+
+.auth-footer a:hover{
+    text-decoration:underline;
 }
