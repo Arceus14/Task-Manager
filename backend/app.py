@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 from bson.errors import InvalidId
+from pymongo.errors import PyMongoError
 
 from config import Config
 from extensions import mongo, jwt, swagger
@@ -64,6 +65,16 @@ def register_error_handlers(app):
             "success": False,
             "message": err.description or err.name
         }), err.code
+
+    # MongoDB itself is unreachable/down/timed out — this is a
+    # dependency outage, not "something went wrong" -> 503, not 500.
+    @app.errorhandler(PyMongoError)
+    def handle_db_error(err):
+        app.logger.error(f"Database error: {err}")
+        return jsonify({
+            "success": False,
+            "message": "Database is currently unavailable. Please try again shortly."
+        }), 503
 
     # Anything else unexpected -> 500, logged server-side,
     # generic message client-side (no stack trace leakage).
