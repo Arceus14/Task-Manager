@@ -1,10 +1,10 @@
-# Task Manager — Backend Developer Intern Assignment (Primetrade.ai)
+# Task Manager — AI Website Developer Intern Assignment (InAmigos Foundation)
 
-A full-stack Task Manager built as a submission for the Primetrade.ai Backend Developer Intern assignment: a Flask + MongoDB REST API with JWT authentication and role-based access control, paired with a React (Vite) frontend for registering, logging in, and managing tasks.
+A full-stack Task Manager built as a submission for the InAmigos foundation Task 3: a Flask + MongoDB REST API with JWT authentication and role-based access control, paired with a React (Vite) frontend for registering, logging in, and managing tasks.
 
 ## Overview
 
-The assignment brief asked for a scalable REST API with authentication and role-based access, plus a simple frontend to demonstrate it. This project implements:
+This project implements a scalable REST API with authentication and role-based access, plus a simple frontend to demonstrate it. This project also implements:
 
 - Email/password registration and login with hashed passwords and JWT issuance
 - Role-based access control distinguishing `user` and `admin`
@@ -243,7 +243,7 @@ Returns:
 
 ## Known Limitations / Next Steps
 
-This was scoped and built as an assignment submission. Everything in the assignment's core checklist is implemented; a few nice-to-haves are intentionally left for future iteration:
+This was scoped and built as an assignment submission.A few nice-to-haves are intentionally left for future iteration:
 
 - Owner information on admin-visible tasks is currently a raw user id, not a resolved name/email
 - No automated test suite
